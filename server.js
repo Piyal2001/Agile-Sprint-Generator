@@ -7,7 +7,6 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 5001;
 
 // 2. Initialize it using the correct matching constructor class
 const ai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
