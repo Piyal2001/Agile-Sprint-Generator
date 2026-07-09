@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>SprintStory AI - Agile Management Dashboard</title>
+            <style>
+                body { 
+                    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+                    margin: 0; padding: 40px 20px 80px 20px; 
+                    background: #f1f5f9; color: #0f172a; 
+                    min-height: 100vh; box-sizing: border-box;
+                }
+                .container { max-width: 1100px; margin: 0 auto; }
+                .input-card { 
+                    background: white; padding: 30px; border-radius: 12px; 
+                    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 35px; 
+                }
+                h2 { color: #4f46e5; margin-top: 0; font-size: 26px; }
+                p.subtitle { color: #64748b; margin-top: -5px; margin-bottom: 25px; font-size: 14px; }
+                label { font-weight: 600; display: block; margin-bottom: 8px; font-size: 14px; color: #334155; }
+                textarea { 
+                    width: 100%; padding: 14px; margin-bottom: 20px; 
+                    border: 1px solid #cbd5e1; border-radius: 8px; 
+                    box-sizing: border-box; font-family: inherit; font-size: 14px; resize: vertical; 
+                }
+                textarea:focus { outline: none; border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15); }
+                button { 
+                    background: #4f46e5; color: white; padding: 14px 20px; border: none; 
+                    border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 600; 
+                    width: 100%; transition: all 0.2s; 
+                }
+                button:hover { background: #4338ca; }
+                button:disabled { background: #94a3b8; cursor: not-allowed; }
+                
+                /* Agile Scrum Board Layout */
+                #result { display: none; margin-top: 20px; }
+                .board-header { 
+                    background: #e0e7ff; border-left: 5px solid #4f46e5; 
+                    padding: 15px 20px; border-radius: 8px; margin-bottom: 25px; 
+                }
+                .board-header h3 { margin: 0; color: #1e1b4b; font-size: 18px; }
+                .board-header p { margin: 5px 0 0 0; font-size: 14px; color: #4338ca; font-weight: 500; }
+                
+                .agile-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+                .board-column { background: #e2e8f0; border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 15px; }
+                .column-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; margin-bottom: 5px; }
+                
+                /* Dynamic Component Cards */
+                .scrum-card { background: white; padding: 16px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.04); border-top: 4px solid #cbd5e1; }
+                .scrum-card.story { border-top-color: #3b82f6; }
+                .scrum-card.criteria { border-top-color: #f59e0b; }
+                .scrum-card.task { border-top-color: #10b981; }
+                
+                .card-id { font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 6px; text-transform: uppercase; }
+                .card-body { font-size: 13.5px; line-height: 1.5; color: #475569; margin: 0; }
+                .list-item { margin-bottom: 6px; padding-left: 5px; }
+                
+                footer {
+                    text-align: center; padding: 20px 0; font-size: 13px; font-weight: 500;
+                    color: #64748b; background: #ffffff; border-top: 1px solid #e2e8f0;
+                    position: fixed; bottom: 0; left: 0; width: 100%; box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.02);
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="input-card">
+                    <h2>🧠 SprintStory AI - Agile Workspace Copilot</h2>
+                    <p class="subtitle">Input rough functional operational requirements to algorithmically parse structured scrum boards, user stories, and acceptance conditions.</p>
+                    
+                    <form id="agileForm">
+                        <label>Enter Raw Corporate Feature Request:</label>
+                        <textarea id="requirementInput" rows="5" placeholder="Example: We need an automated office library feature where users can click to request a book loan for 14 days, tracking checkouts inside the database and generating summary alert markers if returns run past overdue limitations..." required></textarea>
+                        <button type="submit" id="generateBtn">Forge Agile Sprint Backlog</button>
+                    </form>
+                </div>
+                
+                <!-- DIGITAL BOARD PRESENTATION CONTENT -->
+                <div id="result">
+                    <div class="board-header">
+                        <h3 id="featureTitle">Feature Breakdown</h3>
+                        <p id="sprintEstimate">Estimated Scope: --</p>
+                    </div>
+                    
+                    <div class="agile-board">
+                        <!-- Column 1: User Stories -->
+                        <div class="board-column">
+                            <div class="column-title">📖 User Stories (Role / Action / Value)</div>
+                            <div id="storyColumn" class="column-content"></div>
+                        </div>
+                        
+                        <!-- Column 2: Acceptance Criteria -->
+                        <div class="board-column">
+                            <div class="column-title">📐 Acceptance Criteria (Given / When / Then)</div>
+                            <div id="criteriaColumn" class="column-content"></div>
+                        </div>
+                        
+                        <!-- Column 3: Technical Tasks -->
+                        <div class="board-column">
+                            <div class="column-title">🛠️ Engineering Tasks (Backend & Architecture)</div>
+                            <div id="taskColumn" class="column-content"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer>
+                Created with 🧠 & ❤️ By Piyal Bose
+            </footer>
+<script>
+               document.getElementById('agileForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('generateBtn');
+    const resultDiv = document.getElementById('result');
+    const userInput = document.getElementById('requirementInput').value.trim();
+
+    // 🌟 FIXED: Count actual words by splitting the text by spaces
+    const wordCount = userInput === "" ? 0 : userInput.split(/\s+/).length;
+
+    if (wordCount < 15) {
+        alert(`⚠️ Your input is only ${wordCount} words. Please provide a more detailed business requirement (minimum 15 words) so the AI engine can generate a meaningful backlog.`);
+        return; 
+    }
+
+    btn.innerText = "Deconstructing System Requirements...";
+    btn.disabled = true;
+    resultDiv.style.display = "none";
+
+    try {
+                        const response = await fetch('/api/generate-sprint', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ requirement: document.getElementById('requirementInput').value })
+                        });
+                        
+                        const data = await response.json();
+                        
+                        document.getElementById('featureTitle').innerText = "🎯 Epic Group: " + data.featureOverview;
+                        document.getElementById('sprintEstimate').innerText = "⏳ Estimated Effort Allocation: " + data.estimatedSprints + " Dev Sprint(s) (2-Week Operational Block)";
+                        
+                        const storyCol = document.getElementById('storyColumn');
+                        const criteriaCol = document.getElementById('criteriaColumn');
+                        const taskCol = document.getElementById('taskColumn');
+                        
+                        storyCol.innerHTML = '';
+                        criteriaCol.innerHTML = '';
+                        taskCol.innerHTML = '';
+                        
+                        (data.userStories || []).forEach((item, index) => {
+                            const id = "US-0" + (index + 1);
+                            
+                            // 1. Append User Story (FIXED: Changed \s to $)
+                            storyCol.innerHTML += `
+                                <div class="scrum-card story">
+                                    <div class="card-id">${id} : ${item.title}</div>
+                                    <p class="card-body"><b>${item.storyText}</b></p>
+                                </div>
+                            `;
+                            
+                            // 2. Append Matching Acceptance Conditions (FIXED: Changed \s to $)
+                            let criteriaHtml = '<ul style="margin:0; padding-left:15px; font-size:13px; color:#475569;">';
+                            item.acceptanceCriteria.forEach(crit => {
+                                criteriaHtml += `<li class="list-item">${crit}</li>`;
+                            });
+                            criteriaHtml += '</ul>';
+                            
+                            criteriaCol.innerHTML += `
+                                <div class="scrum-card criteria">
+                                    <div class="card-id">AC-0${index + 1} (Linked to ${id})</div>
+                                    ${criteriaHtml}
+                                </div>
+                            `;
+                            
+                            // 3. Append Technical Backend Execution Plan (FIXED: Changed \s to $)
+                            let tasksHtml = '<ol style="margin:0; padding-left:15px; font-size:13px; color:#475569;">';
+                            item.technicalTasks.forEach(task => {
+                                tasksHtml += `<li class="list-item">${task}</li>`;
+                            });
+                            tasksHtml += '</ol>';
+                            
+                            taskCol.innerHTML += `
+                                <div class="scrum-card task">
+                                    <div class="card-id">TECH-0${index + 1} (Implementation Build)</div>
+                                    ${tasksHtml}
+                                </div>
+                            `;
+                        });
+                        
+                        resultDiv.style.display = "block";
+                        resultDiv.scrollIntoView({ behavior: 'smooth' });
+                        
+                    } catch (err) {
+                        alert("Failed to communicate with the Scrum generation sub-engine.");
+                    } finally {
+                        btn.innerText = "Forge Agile Sprint Backlog";
+                        btn.disabled = false;
+                    }
+                });
+            </script>
+        </body>
+        </html>
